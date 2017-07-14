@@ -5,7 +5,7 @@ package com.oreilly.learningsparkexamples.java;
 
 import java.util.Arrays;
 import java.util.List;
-import java.lang.Iterable;
+import java.util.Iterator;
 
 import scala.Tuple2;
 
@@ -27,8 +27,8 @@ public class WordCount {
     JavaRDD<String> rdd = sc.textFile(args[1]);
     JavaPairRDD<String, Integer> counts = rdd.flatMap(
       new FlatMapFunction<String, String>() {
-        public Iterable<String> call(String x) {
-          return Arrays.asList(x.split(" "));
+        public Iterator<String> call(String x) {
+          return Arrays.asList(x.split(" ")).iterator();
         }}).mapToPair(new PairFunction<String, String, Integer>(){
             public Tuple2<String, Integer> call(String x){
               return new Tuple2(x, 1);
