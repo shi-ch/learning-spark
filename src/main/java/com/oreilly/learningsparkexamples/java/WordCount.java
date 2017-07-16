@@ -24,16 +24,12 @@ public class WordCount {
 		String master = args[0];
 		JavaSparkContext sc = new JavaSparkContext(
       master, "wordcount", System.getenv("SPARK_HOME"), System.getenv("JARS"));
-    JavaRDD<String> rdd = sc.textFile(args[1]);
-    JavaPairRDD<String, Integer> counts = rdd.flatMap(
-      new FlatMapFunction<String, String>() {
-        public Iterator<String> call(String x) {
-          return Arrays.asList(x.split(" ")).iterator();
-        }}).mapToPair(new PairFunction<String, String, Integer>(){
-            public Tuple2<String, Integer> call(String x){
-              return new Tuple2(x, 1);
-            }}).reduceByKey(new Function2<Integer, Integer, Integer>(){
-                public Integer call(Integer x, Integer y){ return x+y;}});
+      JavaRDD<String> rdd = sc.textFile(args[1]);
+      JavaPairRDD<String, Integer> counts = rdd
+              .flatMap(s -> Arrays.asList(s.split(" ")).iterator())
+              .mapToPair(word -> new Tuple2<>(word, 1))
+              .reduceByKey((a, b) -> a + b);
+
     counts.saveAsTextFile(args[2]);
 	}
 }
